@@ -25,7 +25,7 @@ class Telegram{
      */
     protected function Request($Method, array $Parameters = []){
         //Code
-        $resource = curl_init($this->API_URL.$TOkenApi.'/'.$Method);
+        $resource = curl_init($this->API_URL . $this->TokenApi . '/' . $Method);
         $options = array(
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HEADER => false,
