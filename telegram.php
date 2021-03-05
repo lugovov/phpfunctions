@@ -34,7 +34,8 @@ class Telegram{
             CURLOPT_SSL_VERIFYPEER => false );
         //SendApiBot ....
         if (!is_null($Parameters)) {
-            $options[CURLOPT_POSTFIELDS] = http_build_query($Parameters); 
+            $options[CURLOPT_POST] = 1;
+            $options[CURLOPT_POSTFIELDS] = $Parameters; 
         }
         curl_setopt_array($resource, $options);
         $GetBody = curl_exec($resource);
@@ -43,12 +44,11 @@ class Telegram{
         return $ResultJson;
         
     }
-
-    /**
-     * @example (getMe,array_Parameters)
-     */
-    protected function RequestFile($Method, array $Parameters = []){
-        //TODO
+    private function createFileData($file){
+        if(file_exists($file)){
+            return curl_file_create($file,mime_content_type($file));
+        }else  
+            return $file;
     }
 
     /**
@@ -140,13 +140,13 @@ class Telegram{
     public function SendAudio($chat_id, $audio, $data=[]){
         $data=[];
         $data["chat_id"]= $chat_id;
-        $data["audio"]= $audio;
+        $data["audio"]= $this->createFileData($audio);
         $data["duration"] = $duration;
         $data["performer"] = $performer;
         $data["title"] = $title;
         $data["reply_to_message_id"] = $reply_to_message_id;
         $data["reply_markup"] = $reply_markup;
-        return $this->RequestFile("sendAudio", $data);
+        return $this->Request("sendAudio", $data);
     }
    /**
      * @param integer      chat_id
@@ -159,10 +159,10 @@ class Telegram{
     public function SendDocument($chat_id, $document, $reply_to_message_id = null, $reply_markup = null){
         $data=[];
         $data["chat_id"]= $chat_id;
-        $data["document"]= $document;
+        $data["document"]= $this->createFileData($document);
         $data["reply_to_message_id"] = $reply_to_message_id;
         $data["reply_markup"] = $reply_markup;
-        return $this->RequestFile("sendDocument", $data);
+        return $this->Request("sendDocument", $data);
     }
     /**
      * @param integer      chat_id
@@ -175,10 +175,10 @@ class Telegram{
     public function SendSticker($chat_id, $sticker, $reply_to_message_id = null, $reply_markup = null){
         $data=[];
         $data["chat_id"]= $chat_id;
-        $data["sticker"]= $sticker;
+        $data["sticker"]= $this->createFileData($sticker);
         $data["reply_to_message_id"] = $reply_to_message_id;
         $data["reply_markup"] = $reply_markup;
-        return $this->RequestFile("sendSticker", $data);
+        return $this->Request("sendSticker", $data);
     }
     /**
      * @param integer      chat_id
@@ -193,12 +193,12 @@ class Telegram{
     public function SendVideo($chat_id, $video, $duration = null, $caption = null, $reply_to_message_id = null, $reply_markup = null){
         $data=[];
         $data["chat_id"]= $chat_id;
-        $data["video"]= $video;
+        $data["video"]= $this->createFileData($video);
         $data["duration"] = $duration;
         $data["caption"] = $caption;
         $data["reply_to_message_id"] = $reply_to_message_id;
         $data["reply_markup"] = $reply_markup;
-        return $this->RequestFile("sendVideo", $data);
+        return $this->Request("sendVideo", $data);
     }
     /**
      * @param integer      chat_id
@@ -213,11 +213,11 @@ class Telegram{
     public function SendVoice($chat_id, $voice, $duration = null, $reply_to_message_id = null, $reply_markup = null){
         $data=[];
         $data["chat_id"]= $chat_id;
-        $data["voice"]= $voice;
+        $data["voice"]= $this->createFileData($voice);
         $data["duration"] = $duration;
         $data["reply_to_message_id"] = $reply_to_message_id;
         $data["reply_markup"] = $reply_markup;
-        return $this->RequestFile("sendVoice", $data);
+        return $this->Request("sendVoice", $data);
     }
     /**
      * @param integer      chat_id
